@@ -4,3 +4,4 @@ bin
 /infra3.etcd/
 /infra1.etcd/
 /infra2.etcd/
+metad.exe

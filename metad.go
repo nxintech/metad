@@ -156,16 +156,21 @@ func (m *Metad) watchSignals() {
 	notifier := make(chan os.Signal, 1)
 	signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
-		sig := <-notifier
+		<-notifier
 		log.Info("Received stop signal")
 		signal.Stop(notifier)
 		m.Stop()
-		pid := syscall.Getpid()
+		pid := os.Getpid()
 		// exit directly if it is the "init" process, since the kernel will not help to kill pid 1.
 		if pid == 1 {
 			os.Exit(0)
 		}
-		syscall.Kill(pid, sig.(syscall.Signal))
+		process, error := os.FindProcess(pid)
+		if error == nil {
+			process.Kill()
+		} else {
+			log.Info(error.Error())
+		}
 	}()
 }
 
