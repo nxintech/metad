@@ -31,9 +31,9 @@ func TestMetarepoData(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -87,10 +87,10 @@ func TestMetarepoMapping(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -195,10 +195,10 @@ func TestMetarepoSelf(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -286,10 +286,10 @@ func TestMetarepoRoot(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -339,10 +339,10 @@ func TestWatch(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -412,10 +412,10 @@ func TestWatchSelf(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -496,10 +496,10 @@ func TestWatchCloseChan(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)
@@ -552,10 +552,10 @@ func TestSelfWatchNodeNotExist(t *testing.T) {
 	nodes := backends.GetDefaultBackends(backend)
 
 	config := backends.Config{
-		Backend:      backend,
-		BackendNodes: nodes,
-		Prefix:       prefix,
-		Group:        group,
+		Backend: backend,
+		Nodes:   nodes,
+		Prefix:  prefix,
+		Group:   group,
 	}
 	storeClient, err := backends.New(config)
 	assert.NoError(t, err)

@@ -1,0 +1,20 @@
+pid_file: /var/run/metad.pid
+xff: true
+only_self: true
+listen: :8080
+listen_manage: 127.0.0.1:9611
+backends:
+  backend: etcd
+  prefix: /users/uid1
+  group: default
+  basic_auth: true
+  client_ca_keys: /opt/metad/client_ca_keys
+  client_cert: /opt/metad/client_cert
+  client_key: /opt/metad/client_key
+  nodes:
+  - 192.168.11.1:2379
+  - 192.168.11.2:2379
+  password: password
+  username: username
+log:
+  log_level: debug

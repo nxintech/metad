@@ -34,6 +34,8 @@ const (
 	ContentTypeYAML = "application/yaml"
 )
 
+var metad *Metad
+
 type HttpError struct {
 	Status  int
 	Message string
@@ -62,27 +64,15 @@ type Metad struct {
 	requestIDGen atomic.AtomicLong
 }
 
-func New(config *Config) (*Metad, error) {
+func NewMetad(config *Config) (*Metad, error) {
 
-	backendsConfig := backends.Config{
-		Backend:      config.Backend,
-		BasicAuth:    config.BasicAuth,
-		ClientCaKeys: config.ClientCaKeys,
-		ClientCert:   config.ClientCert,
-		ClientKey:    config.ClientKey,
-		BackendNodes: config.BackendNodes,
-		Password:     config.Password,
-		Username:     config.Username,
-		Prefix:       config.Prefix,
-		Group:        config.Group,
-	}
 
-	storeClient, err := backends.New(backendsConfig)
+	storeClient, err := backends.New(config.Backends)
 	if err != nil {
 		return nil, err
 	}
 
-	metadataRepo := metadata.New(config.OnlySelf, storeClient)
+	metadataRepo := metadata.New(config.Only_self, storeClient)
 	return &Metad{config: config, metadataRepo: metadataRepo, router: mux.NewRouter(), manageRouter: mux.NewRouter()}, nil
 }
 
@@ -161,8 +151,8 @@ func (m *Metad) watchSignals() {
 }
 
 func (m *Metad) watchManage() {
-	log.Info("Listening for Manage on %s", m.config.ListenManage)
-	go http.ListenAndServe(m.config.ListenManage, m.manageRouter)
+	log.Info("Listening for Manage on %s", m.config.Listen_manage)
+	go http.ListenAndServe(m.config.Listen_manage, m.manageRouter)
 }
 
 func (m *Metad) dataGet(ctx context.Context, req *http.Request) (interface{}, *HttpError) {
@@ -499,7 +489,7 @@ func respondYAML(w http.ResponseWriter, req *http.Request, val interface{}) int 
 }
 
 func (m *Metad) requestIP(req *http.Request) string {
-	if m.config.EnableXff {
+	if m.config.Xff {
 		clientIp := req.Header.Get("X-Forwarded-For")
 		if len(clientIp) > 0 {
 			return clientIp

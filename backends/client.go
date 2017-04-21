@@ -36,7 +36,7 @@ func New(config Config) (StoreClient, error) {
 		config.Group = "default"
 	}
 	config.Prefix = path.Join("/", config.Prefix)
-	backendNodes := config.BackendNodes
+	backendNodes := config.Nodes
 	log.Info("Backend nodes set to " + strings.Join(backendNodes, ", "))
 	if len(backendNodes) == 0 {
 		backendNodes = GetDefaultBackends(config.Backend)
@@ -44,7 +44,7 @@ func New(config Config) (StoreClient, error) {
 	switch config.Backend {
 	case "etcd", "etcdv3":
 		// Create the etcdv3 client upfront and use it for the life of the process.
-		return etcdv3.NewEtcdClient(config.Group, config.Prefix, backendNodes, config.ClientCert, config.ClientKey, config.ClientCaKeys, config.BasicAuth, config.Username, config.Password)
+		return etcdv3.NewEtcdClient(config.Group, config.Prefix, backendNodes, config.Client_cert, config.Client_key, config.Client_ca_keys, config.Basic_auth, config.Username, config.Password)
 	case "local":
 		return local.NewLocalClient()
 	}

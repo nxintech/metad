@@ -11,10 +11,11 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"github.com/yunify/metad/backends"
 )
 
 var (
-	testBackend = "local"
+	testBackend = backends.Config{Backend:"local"}
 	sleepTime   = 100 * time.Millisecond
 )
 
@@ -24,9 +25,9 @@ func init() {
 
 func TestMetad(t *testing.T) {
 	config := &Config{
-		Backend: testBackend,
+		Backends: testBackend,
 	}
-	metad, err := New(config)
+	metad, err := NewMetad(config)
 	assert.NoError(t, err)
 
 	metad.Init()
@@ -188,9 +189,9 @@ func TestMetad(t *testing.T) {
 
 func TestMetadWatch(t *testing.T) {
 	config := &Config{
-		Backend: testBackend,
+		Backends: testBackend,
 	}
-	metad, err := New(config)
+	metad, err := NewMetad(config)
 	assert.NoError(t, err)
 
 	metad.Init()
@@ -257,9 +258,9 @@ func TestMetadWatch(t *testing.T) {
 
 func TestMetadWatchSelf(t *testing.T) {
 	config := &Config{
-		Backend: testBackend,
+		Backends: testBackend,
 	}
-	metad, err := New(config)
+	metad, err := NewMetad(config)
 	assert.NoError(t, err)
 
 	metad.Init()
@@ -345,9 +346,9 @@ func TestMetadWatchSelf(t *testing.T) {
 
 func TestMetadMappingDelete(t *testing.T) {
 	config := &Config{
-		Backend: testBackend,
+		Backends: testBackend,
 	}
-	metad, err := New(config)
+	metad, err := NewMetad(config)
 	assert.NoError(t, err)
 
 	metad.Init()

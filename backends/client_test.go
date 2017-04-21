@@ -33,9 +33,9 @@ func TestClientGetPut(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -67,9 +67,9 @@ func TestClientGetsPuts(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -135,9 +135,9 @@ func TestClientPutJSON(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -234,9 +234,9 @@ func TestClientNoPrefix(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -310,9 +310,9 @@ func TestClientSync(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -350,10 +350,10 @@ func TestMapping(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
-			Group:        group,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
+			Group:   group,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)
@@ -399,10 +399,10 @@ func TestMappingSync(t *testing.T) {
 		nodes := GetDefaultBackends(backend)
 
 		config := Config{
-			Backend:      backend,
-			BackendNodes: nodes,
-			Prefix:       prefix,
-			Group:        group,
+			Backend: backend,
+			Nodes:   nodes,
+			Prefix:  prefix,
+			Group:   group,
 		}
 		storeClient, err := New(config)
 		assert.NoError(t, err)

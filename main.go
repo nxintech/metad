@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	flag "github.com/spf13/pflag"
 	"fmt"
 	"github.com/yunify/metad/log"
 	"net/http"
@@ -9,6 +9,9 @@ import (
 	"os"
 	"runtime"
 	"time"
+	"github.com/spf13/viper"
+	"io/ioutil"
+	"strconv"
 )
 
 func main() {
@@ -23,7 +26,7 @@ func main() {
 
 	flag.Parse()
 
-	if printVersion {
+	if viper.GetBool("version") {
 		fmt.Printf("Metad Version: %s\n", VERSION)
 		fmt.Printf("Git Version: %s\n", GIT_VERSION)
 		fmt.Printf("Go Version: %s\n", runtime.Version())
@@ -31,7 +34,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if pprof {
+	if viper.GetBool("pprof") {
 		fmt.Printf("Start pprof, 127.0.0.1:6060\n")
 		go func() {
 			log.Fatal("%v", http.ListenAndServe("127.0.0.1:6060", nil))
@@ -40,13 +43,29 @@ func main() {
 
 	var config *Config
 	var err error
-	if config, err = initConfig(); err != nil {
+	if config, err = NewConfig(); err != nil {
 		log.Fatal(err.Error())
 		os.Exit(-1)
 	}
 
+	// Update config from commandline flags.
+
+	if config.Log.Log_level != "" {
+		println("set log level to:", config.Log.Log_level)
+		log.SetLevel(config.Log.Log_level)
+	}
+
+	if config.Pid_file != "" {
+		log.Info("Writing pid %d to %s", os.Getpid(), config.Pid_file)
+		if err := ioutil.WriteFile(config.Pid_file, []byte(strconv.Itoa(os.Getpid())), 0644); err != nil {
+			log.Fatal("Failed to write pid file %s: %v", config.Pid_file, err)
+		}
+	}
+
+
+
 	log.Info("Starting metad %s", VERSION)
-	metad, err = New(config)
+	metad, err = NewMetad(config)
 	if err != nil {
 		log.Fatal(err.Error())
 		os.Exit(-1)
