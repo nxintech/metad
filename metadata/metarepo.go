@@ -9,7 +9,6 @@ import (
 	"github.com/yunify/metad/store"
 	"github.com/yunify/metad/util"
 	"github.com/yunify/metad/util/flatmap"
-	"net"
 	"path"
 	"reflect"
 	"strings"
@@ -98,6 +97,29 @@ func (r *MetadataRepo) getAccessTree(clientIP string) store.AccessTree {
 	}
 	return accessTree
 }
+
+func (r *MetadataRepo) autoAccessTree(key string) store.AccessTree {
+    mappingData := r.GetMapping(path.Join("/", key))
+    if mappingData == nil {
+            if log.IsDebugEnable() {
+                log.Debug("Can not find mapping for %s", key)
+            }
+            return nil
+    }
+    mapping, mok := mappingData.(map[string]interface{})
+    if !mok {
+        log.Warning("Mapping for %s is not a map, result:%v", key, mappingData)
+        return nil
+    }
+    flattenMapping := flatmap.Flatten(mapping)
+    rules := []store.AccessRule{}
+    for _, dataPath := range flattenMapping {
+        rules = append(rules, store.AccessRule{Path: dataPath, Mode: store.AccessModeRead})
+    }
+    accessTree := store.NewAccessTree(rules)
+    return accessTree
+}
+
 
 func (r *MetadataRepo) Root(clientIP string, nodePath string) (currentVersion int64, val interface{}) {
 	if clientIP == "" {
@@ -251,6 +273,39 @@ func (r *MetadataRepo) self(clientIP string, nodePath string, traveller store.Tr
 	return r.getMappingDatas(nodePath, mapping, traveller)
 }
 
+func (r *MetadataRepo) Map(clientIP string, key string, nodePath string) interface{} {
+    if key == "" {
+        panic(errors.New("Metad-Map-Key must not be empty."))
+    }
+    nodePath = path.Join("/", nodePath)
+
+    accessTree := r.autoAccessTree(key)
+    if accessTree == nil {
+        log.Warning("auto accessTree is nil for %s,key %s", clientIP, key)
+        return nil
+    }
+    traveller := r.data.Traveller(accessTree)
+    defer traveller.Close()
+    return r.doMap(key, nodePath, traveller)
+}
+
+func (r *MetadataRepo) doMap(key string, nodePath string, traveller store.Traveller) interface{} {
+    mappingData := r.GetMapping(path.Join("/", key))
+    if mappingData == nil {
+        if log.IsDebugEnable() {
+            log.Debug("Can not find mapping for %s", key)
+        }
+        return nil
+    }
+    mapping, mok := mappingData.(map[string]interface{})
+    if !mok {
+        log.Warning("Mapping for %s is not a map, result:%v", key, mappingData)
+        return nil
+    }
+    return r.getMappingDatas(nodePath, mapping, traveller)
+}
+
+
 func (r *MetadataRepo) getMappingData(nodePath, link string, traveller store.Traveller) interface{} {
 	nodePath = path.Join(link, nodePath)
 	if traveller.Enter(nodePath) {
@@ -359,11 +414,11 @@ func (r *MetadataRepo) PutMapping(nodePath string, data interface{}, replace boo
 			log.Warning("Unexpect data type for mapping: %s", reflect.TypeOf(data))
 			return errors.New("mapping data should be json object.")
 		}
-		for k, v := range m {
-			ip := net.ParseIP(k)
-			if ip == nil {
-				return errors.New("mapping's first level key should be ip .")
-			}
+		for _, v := range m {
+			//ip := net.ParseIP(k)
+			//if ip == nil {
+			//	return errors.New("mapping's first level key should be ip .")
+			//}
 			err := checkMapping(v)
 			if err != nil {
 				return err
@@ -371,10 +426,10 @@ func (r *MetadataRepo) PutMapping(nodePath string, data interface{}, replace boo
 		}
 	} else {
 		parts := strings.Split(nodePath, "/")
-		ip := net.ParseIP(parts[1])
-		if ip == nil {
-			return errors.New("mapping's first level key should be ip .")
-		}
+		//ip := net.ParseIP(parts[1])
+		//if ip == nil {
+		//	return errors.New("mapping's first level key should be ip .")
+		//}
 		// nodePath: /ip
 		if len(parts) == 2 {
 			err := checkMapping(data)

@@ -1,5 +1,3 @@
-// +build linux
-
 package main
 
 import (
@@ -28,6 +26,7 @@ import (
 	"github.com/yunify/metad/store"
 	"github.com/yunify/metad/util/flatmap"
 	yaml "gopkg.in/yaml.v2"
+	"os/exec"
 )
 
 const (
@@ -172,16 +171,24 @@ func (m *Metad) watchSignals() {
 	notifier := make(chan os.Signal, 1)
 	signal.Notify(notifier, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
-		sig := <-notifier
+		//sig := <-notifier
 		log.Info("Received stop signal")
 		signal.Stop(notifier)
 		m.Stop()
 		pid := syscall.Getpid()
+		//pid := exec.Cmd.Process.Pid
 		// exit directly if it is the "init" process, since the kernel will not help to kill pid 1.
 		if pid == 1 {
 			os.Exit(0)
 		}
-		syscall.Kill(pid, sig.(syscall.Signal))
+		select {
+		case <-notifier:
+			kill := exec.Command("TASKKILL", "/T", "/F", "/PID", strconv.Itoa(pid))
+			kill.Stderr = os.Stderr
+			kill.Stdout = os.Stdout
+			kill.Run()
+		}
+		//syscall.Kill(pid, sig.(syscall.Signal))
 	}()
 }
 
@@ -409,6 +416,7 @@ func (m *Metad) rootHandler(ctx context.Context, req *http.Request) (currentVers
 
 func (m *Metad) selfHandler(ctx context.Context, req *http.Request) (currentVersion int64, result interface{}, httpErr *HttpError) {
 	clientIP := m.requestIP(req)
+
 	vars := mux.Vars(req)
 	nodePath := vars["nodePath"]
 	if nodePath == "" {
@@ -444,6 +452,7 @@ func (m *Metad) selfHandler(ctx context.Context, req *http.Request) (currentVers
 	}
 	return
 }
+
 
 func (m *Metad) mapHandler(ctx context.Context, req *http.Request) (currentVersion int64, result interface{}, httpErr *HttpError) {
 	key := req.Header.Get("Metad-Map-Key")
